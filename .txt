@@ -1,0 +1,28 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------Seguem abaixo Informações importantes sobre o código---------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Para rodar, usar o comando:
+ghc -o main main.hs
+
+
+Exemplos de Entrada:
+
+Tautologias:
+     (p|(~(p)))
+     (p->(q->p))
+     (((~(p))->(~(q)))->(q -> p))
+     (p->(q->(z->(u->(p|t)))))     
+
+
+Não são Tautologias:
+     ((p|q)->p)
+     (p->(p->q))
+     ((p&q)|(p&z))
+     (p->(q->(z->(u->(p&t)))))
+
+
+
+
+link do Relatório (para o caso de não ter sido adicionado no classroom):
+https://docs.google.com/document/d/1suDf7mx0lDfsWll8NTnt1_qQSZOPHNHC5WmxXDGTEbA/edit?usp=sharing
