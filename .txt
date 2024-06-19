@@ -9,10 +9,10 @@ ghc -o main main.hs
 Exemplos de Entrada:
 
 Tautologias:
-     (p|(~(p)))
+     (p|~(p))
      (p->(q->p))
-     (((~(p))->(~(q)))->(q -> p))
-     (p->(q->(z->(u->(p|t)))))     
+     ((~(p)->~(q))->(q->p))
+     (p->(q->(z->(u->(p|t)))))
 
 
 Não são Tautologias:

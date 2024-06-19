@@ -1,12 +1,18 @@
 module Main where
-import Data.List (isPrefixOf)
+import Data.List (isPrefixOf, nub)
+import Control.Monad (replicateM)
+import Data.Char (isAlphaNum)
+
 import TabelaRegras
 
 data Node = Node Expr Node Node
+        --       Expr Esq   Dir
           | Empty
           deriving (Show)
+          
 
 data Expr = Expr String Bool 
+            --   expr_str
           | Empty_expr
           deriving(Show)
 
@@ -53,7 +59,6 @@ criaArvoreRefutacao queue = do
                         left <- criaArvoreRefutacao queue'
                         return $ Node (Expr expr_str valor) left Empty
 
-
 separaBinario :: String -> (String, String, String)
 separaBinario str = splitHelper 0 "" "" (init (tail str))
   where
@@ -79,7 +84,6 @@ decompoeExpressao expr
     | length expr == 1 = (expr, "", "")
     | otherwise = error "Expressão inválida"
 
-
 printaarvore :: Node -> IO ()
 printaarvore arvore = putStrLn $ unlines $ printa arvore
 
@@ -102,6 +106,49 @@ printaSubarvore prefix1 prefix2 arvore =
             printaHelper (prefix2 ++ "├── ") left ++
             printaHelper (prefix2 ++ "└── ") right
 
+checkTautology :: Node -> IO Bool
+checkTautology root = do
+    let paths = collectPaths root
+    let standardizedPaths = map standardizePath paths
+    let nonContradictoryPaths = filter (not . hasContradiction) standardizedPaths
+    mapM_ print nonContradictoryPaths
+    return (null nonContradictoryPaths)
+
+collectPaths :: Node -> [[Expr]]
+collectPaths Empty = []
+collectPaths (Node expr left right) = 
+    let leftPaths = map (expr:) (collectPaths left)
+        rightPaths = map (expr:) (collectPaths right)
+    in if null leftPaths && null rightPaths
+       then [[expr]]
+       else leftPaths ++ rightPaths
+
+hasContradiction :: [Expr] -> Bool
+hasContradiction = hasContradiction' []
+
+hasContradiction' :: [(String, Bool)] -> [Expr] -> Bool
+hasContradiction' _ [] = False
+hasContradiction' vars ((Expr var val):rest) =
+    case lookup var vars of
+        Just existingVal -> if existingVal /= val
+                            then True
+                            else hasContradiction' vars rest
+        Nothing -> hasContradiction' ((var, val):vars) rest
+hasContradiction' _ (Empty_expr:rest) = hasContradiction' [] rest
+
+standardizeExpr :: Expr -> Expr
+standardizeExpr (Expr var val) = Expr (removeParens (removeNot var)) (standardizeVal var val)
+  where
+    removeNot ('~':xs) = xs
+    removeNot xs = xs
+    standardizeVal ('~':_) v = not v
+    standardizeVal _ v = v
+    removeParens = filter isAlphaNum
+
+standardizePath :: [Expr] -> [Expr]
+standardizePath = map standardizeExpr
+
+
 main :: IO ()
 main = do
     putStrLn "-- ESPECIFICAÇÕES PARA STRING DE ENTRADA:"
@@ -114,6 +161,7 @@ main = do
     let initialQueue = enqueue (Queue [] []) expr
     arvore <- criaArvoreRefutacao initialQueue
     printaarvore arvore
-    
+    tautologia <- checkTautology arvore
+    putStrLn $ "A expressão é uma tautologia? " ++ show tautologia
 
 -- ((p|(q&r))->((p|q)&(p|r)))
