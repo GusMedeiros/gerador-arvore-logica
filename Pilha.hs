@@ -1,19 +1,17 @@
 module Pilha (
-    Pilha,
+    Pilha(..),
     empty,
     isEmpty,
     push,
     pop,
     top
 ) where
-
--- Definindo o tipo Expr
-data Expr = Expr String Bool
-    deriving (Show)
+import Expr
 
 -- Definindo o tipo Pilha
 newtype Pilha = Pilha [Expr]
     deriving (Show)
+    
 
 -- Função para criar uma pilha vazia
 empty :: Pilha
