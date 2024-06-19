@@ -11,16 +11,23 @@ data Node =
 
 data Expr =
     Expr String Bool
+    | Empty_expr
     deriving(Show)
 
-
+-- (p|r) (False)
+-- r (false)
 criaArvoreRefutacao :: Expr -> Node
+criaArvoreRefutacao Empty_expr = Empty
 criaArvoreRefutacao (Expr expr_str valor) =
     let
         (p_expr_str, op_expr_str, q_expr_str) = decompoeExpressao expr_str
+        -- "r", "", ""
         (p_val, op_tabela, q_val) = tabelaRegra (p_expr_str, op_expr_str, q_expr_str, valor)
+        -- false, "", false
         p_expr = Expr p_expr_str p_val
+        --            "r"        "false"
         q_expr = Expr q_expr_str q_val
+        --            ""         "false"
     in
         case op_tabela of
             "&" -> Node (Expr expr_str valor) (Node p_expr (criaArvoreRefutacao q_expr) Empty) Empty
@@ -28,7 +35,7 @@ criaArvoreRefutacao (Expr expr_str valor) =
             _   -> if op_expr_str == "~" then
                       Node (Expr expr_str valor) (criaArvoreRefutacao p_expr) Empty
                    else
-                      Node (Expr expr_str valor) (criaArvoreRefutacao p_expr) (criaArvoreRefutacao q_expr)
+                      Node (Expr expr_str valor) (criaArvoreRefutacao Empty_expr) (criaArvoreRefutacao Empty_expr)
 
 
 mergulhaNot :: String -> String

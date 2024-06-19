@@ -10,4 +10,5 @@ tabelaRegra (p, op, q, valor)
   | op == "|"  && not valor = (False, "&", False)
   | op == "~" && valor = (False, "", False)  -- Negação precisa ser ajustada conforme o contexto da tabela
   | op == "~" && not valor = (True, "", True)
+  | op == "" = (valor, "", False)
   | otherwise = error ("Operador ou valor inválido:>" ++ op ++"<.\n")
