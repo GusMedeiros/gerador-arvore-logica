@@ -34,7 +34,7 @@ criaArvoreRefutacao queue = do
             let q_expr = Expr q_expr_str q_val
             let queueQ = enqueue queue' q_expr
             let queueP = enqueue queue' p_expr
-            let queueQP = enqueue (enqueue queue' q_expr) p_expr
+            let queueQP = enqueue (enqueue queue' p_expr) q_expr
             case op_tabela of
                 "&" -> do
                     putStrLn "Operador: &"
